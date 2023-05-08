@@ -26,10 +26,6 @@ Set-Alias devtools  start-dev-tools-container
 
 ```
 
-## Powershell Docker (Image with all modules installed)
-
-alias powershell='docker run -it --rm --net host powershell' - virker ikke med alias
-
 ## Windows Terminal
 
 Put this in you Windows Terminal "Commandline" when creating a new profile for the Dev-tools. Remember to type exit in the terminal to kill the docker container when done using the terminal 😁
