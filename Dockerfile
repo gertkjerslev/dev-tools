@@ -1,0 +1,94 @@
+FROM python:3.10-alpine
+
+RUN apk update
+#Some Tools
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell
+
+#Google Kubernetes control cmd
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN chmod +x ./kubectl
+RUN mv ./kubectl /usr/local/bin/kubectl
+
+#Expose for kubectl proxy
+EXPOSE 8001
+
+#K8 Helm
+RUN wget -q "https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz" -O helm.tar.gz && \
+tar -xzf helm.tar.gz && \
+rm helm.tar.gz && \
+mv linux-amd64/helm /usr/local/bin/helm
+
+# Flux CLI
+RUN curl -s https://fluxcd.io/install.sh 
+
+#AiAC
+RUN git clone https://github.com/gofireflyio/aiac.git && \
+cd aiac && \
+go build
+
+
+#Azure CLI
+WORKDIR azure-cli
+
+ENV AZ_CLI_VERSION=2.47.0
+
+
+RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
+    tar -xzf azcli.tar.gz && ls -l
+
+RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
+    rm azcli.tar.gz
+
+RUN apk add --no-cache bash openssh ca-certificates jq curl openssl perl git zip \
+ && apk add --no-cache --virtual .build-deps gcc make openssl-dev libffi-dev musl-dev linux-headers \
+ && apk add --no-cache libintl icu-libs libc6-compat \
+ && apk add --no-cache bash-completion \
+ && update-ca-certificates
+
+ARG JP_VERSION="0.1.3"
+
+RUN curl -L https://github.com/jmespath/jp/releases/download/${JP_VERSION}/jp-linux-amd64 -o /usr/local/bin/jp \
+ && chmod +x /usr/local/bin/jp
+
+# 1. Build packages and store in tmp dir
+# 2. Install the cli and the other command modules that weren't included
+RUN ./scripts/install_full.sh \
+ && cat /azure-cli/az.completion > ~/.bashrc \
+ && runDeps="$( \
+    scanelf --needed --nobanner --recursive /usr/local \
+        | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+        | sort -u \
+        | xargs -r apk info --installed \
+        | sort -u \
+    )" \
+ && apk add --virtual .rundeps $runDeps
+
+# Remove CLI source code from the final image and normalize line endings.
+RUN rm -rf ./azure-cli && \
+    dos2unix /root/.bashrc /usr/local/bin/az
+ENV AZ_INSTALLER=DOCKER
+
+
+
+# Tab completion
+#RUN cat  /azure-cli/az.completion >> ~/.bashrc
+#RUN echo -e "\n" >> ~/.bashrc
+RUN echo -e "source <(kubectl completion bash)" >> ~/.bashrc
+RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
+RUN echo "alias k=kubectl" >> ~/.bashrc
+
+# Install oh-my-posh
+RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
+RUN chmod +x /usr/local/bin/oh-my-posh
+
+RUN mkdir ~/.poshthemes \
+    && wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -O ~/.poshthemes/themes.zip \
+    && unzip ~/.poshthemes/themes.zip -d ~/.poshthemes \
+    && chmod u+rw ~/.poshthemes/*.omp.* \
+    && rm ~/.poshthemes/themes.zip
+
+RUN echo -e 'eval "$(oh-my-posh init bash --config 'https://raw.githubusercontent.com/gertkjerslev/oh-my-posh/main/.mytheme.omp.json')"' >> ~/.bashrc
+
+WORKDIR /
+
+ENTRYPOINT ["bash"]
