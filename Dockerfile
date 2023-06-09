@@ -18,6 +18,13 @@ tar -xzf helm.tar.gz && \
 rm helm.tar.gz && \
 mv linux-amd64/helm /usr/local/bin/helm
 
+# ClusterCtl
+
+RUN curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.4.2/clusterctl-linux-amd64 -o clusterctl
+RUN chmod +x ./clusterctl
+RUN mv ./clusterctl /usr/local/bin/clusterctl
+
+
 # Flux CLI
 RUN curl -s https://fluxcd.io/install.sh 
 

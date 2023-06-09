@@ -31,5 +31,5 @@ Set-Alias devtools  start-dev-tools-container
 Put this in you Windows Terminal "Commandline" when creating a new profile for the Dev-tools. Remember to type exit in the terminal to kill the docker container when done using the terminal 😁
 
 ``` bash
-docker run -it --rm -v C:/Users/#USERNAME#:/work -v C:/Users/#USERNAME#/.azure:/root/.azure -v C:/Users/#USERNAME#/.kube:/root/.kube --rm --workdir /work dev-tools:latest
+docker run -it --rm -v C:/Users/#USERNAME#:/work -v C:/Users/#USERNAME#/.azure:/root/.azure -v C:/Users/#USERNAME#/.kube:/root/.kube -v C:/Users/#USERNAME#/.minikube:/root/.minikube --rm --workdir /work dev-tools:latest
 ```
