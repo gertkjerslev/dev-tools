@@ -2,7 +2,7 @@ FROM python:3.10-alpine
 
 RUN apk update
 #Some Tools
-RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell 
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -19,11 +19,14 @@ rm helm.tar.gz && \
 mv linux-amd64/helm /usr/local/bin/helm
 
 # ClusterCtl
-
 RUN curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.4.2/clusterctl-linux-amd64 -o clusterctl
 RUN chmod +x ./clusterctl
 RUN mv ./clusterctl /usr/local/bin/clusterctl
 
+# ArgoCD
+RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+RUN install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+RUN rm argocd-linux-amd64
 
 # Flux CLI
 RUN curl -s https://fluxcd.io/install.sh 
