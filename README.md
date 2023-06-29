@@ -10,7 +10,7 @@ docker build -t dev-tools:latest .
 ## Docker run
 
 ``` bash
-docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube --rm --workdir /work dev-tools:latest
+docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v $home/.minikube:/root/.minikube --rm --workdir /work dev-tools:latest
 ```
 
 ## Powershell alias
@@ -20,9 +20,9 @@ Put this in your powershell $profile
 ``` powershell
 
 function start-dev-tools-container {  
-    docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube --rm --workdir /work dev-tools:latest
+    docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v $home/.minikube:/root/.minikube --rm --workdir /work dev-tools:latest
 }
-Set-Alias devtools  start-dev-tools-container
+Set-Alias devtools start-dev-tools-container
 
 ```
 

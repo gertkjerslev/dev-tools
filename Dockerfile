@@ -29,7 +29,9 @@ RUN install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 RUN rm argocd-linux-amd64
 
 # Flux CLI
-RUN curl -s https://fluxcd.io/install.sh 
+#RUN curl -s https://fluxcd.io/install.sh
+RUN bash -c "$(curl -s https://fluxcd.io/install.sh)"
+#RUN . <(flux completion bash)
 
 #AiAC
 RUN git clone https://github.com/gofireflyio/aiac.git && \
