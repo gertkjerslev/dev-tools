@@ -1,8 +1,9 @@
 FROM python:3.10-alpine
 
+
 RUN apk update
 #Some Tools
-RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell 
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -42,7 +43,7 @@ go build
 #Azure CLI
 WORKDIR azure-cli
 
-ENV AZ_CLI_VERSION=2.47.0
+ENV AZ_CLI_VERSION=2.57.0
 
 
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
@@ -79,6 +80,9 @@ RUN ./scripts/install_full.sh \
 RUN rm -rf ./azure-cli && \
     dos2unix /root/.bashrc /usr/local/bin/az
 ENV AZ_INSTALLER=DOCKER
+
+# Install Azure Powershell module
+
 
 
 
