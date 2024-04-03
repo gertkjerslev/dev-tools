@@ -43,7 +43,7 @@ go build
 #Azure CLI
 WORKDIR azure-cli
 
-ENV AZ_CLI_VERSION=2.57.0
+ENV AZ_CLI_VERSION=2.58.0
 
 
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
