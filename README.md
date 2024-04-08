@@ -10,7 +10,7 @@ docker build -t dev-tools:latest .
 ## Docker run
 
 ``` bash
-docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube --net host --rm --workdir /work dev-tools:latest
+docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run/docker.sock --net host --rm --workdir /work dev-tools:latest
 ```
 
 ## Powershell alias
