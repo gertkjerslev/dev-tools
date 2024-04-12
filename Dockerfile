@@ -1,6 +1,5 @@
 FROM python:3.10-alpine
 
-
 RUN apk update
 #Some Tools
 RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn
@@ -30,28 +29,20 @@ RUN install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 RUN rm argocd-linux-amd64
 
 # Flux CLI
-#RUN curl -s https://fluxcd.io/install.sh
 RUN bash -c "$(curl -s https://fluxcd.io/install.sh)"
-#RUN . <(flux completion bash)
 
 #AiAC
 RUN git clone https://github.com/gofireflyio/aiac.git && \
 cd aiac && \
 go build
 
-
 #Azure CLI
 WORKDIR azure-cli
-
 ENV AZ_CLI_VERSION=2.58.0
-
-
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
-
 RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
     rm azcli.tar.gz
-
 RUN apk add --no-cache bash openssh ca-certificates jq curl openssl perl git zip \
  && apk add --no-cache --virtual .build-deps gcc make openssl-dev libffi-dev musl-dev linux-headers \
  && apk add --no-cache libintl icu-libs libc6-compat \
@@ -82,9 +73,6 @@ RUN rm -rf ./azure-cli && \
 ENV AZ_INSTALLER=DOCKER
 
 # Install Azure Powershell module
-
-
-
 
 # Tab completion
 #RUN cat  /azure-cli/az.completion >> ~/.bashrc
