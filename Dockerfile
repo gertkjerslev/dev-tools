@@ -2,7 +2,7 @@ FROM python:3.10-alpine
 
 RUN apk update
 #Some Tools
-RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -81,17 +81,12 @@ RUN echo -e "source <(kubectl completion bash)" >> ~/.bashrc
 RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
 RUN echo "alias k=kubectl" >> ~/.bashrc
 
-# Install oh-my-posh
-RUN wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64 -O /usr/local/bin/oh-my-posh
-RUN chmod +x /usr/local/bin/oh-my-posh
-
-RUN mkdir ~/.poshthemes \
-    && wget https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/themes.zip -O ~/.poshthemes/themes.zip \
-    && unzip ~/.poshthemes/themes.zip -d ~/.poshthemes \
-    && chmod u+rw ~/.poshthemes/*.omp.* \
-    && rm ~/.poshthemes/themes.zip
-
-RUN echo -e 'eval "$(oh-my-posh init bash --config 'https://raw.githubusercontent.com/gertkjerslev/oh-my-posh/main/.mytheme.omp.json')"' >> ~/.bashrc
+# Install starship
+RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
+RUN echo -e 'eval "$(starship init bash)"' >> ~/.bashrc
+RUN mkdir -p ~/.config
+# copy the starship config from github
+RUN wget https://raw.githubusercontent.com/gertkjerslev/dotfiles/main/starship/.config/starship.toml -O ~/.config/starship.toml
 
 WORKDIR /
 
