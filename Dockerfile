@@ -78,15 +78,15 @@ ENV AZ_INSTALLER=DOCKER
 #RUN cat  /azure-cli/az.completion >> ~/.bashrc
 #RUN echo -e "\n" >> ~/.bashrc
 RUN echo -e "source <(kubectl completion bash)" >> ~/.bashrc
-RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
+#RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
 RUN echo "alias k=kubectl" >> ~/.bashrc
 
 # Install starship
-RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
-RUN echo -e 'eval "$(starship init bash)"' >> ~/.bashrc
 RUN mkdir -p ~/.config
 # copy the starship config from github
 RUN wget https://raw.githubusercontent.com/gertkjerslev/dotfiles/main/starship/.config/starship.toml -O ~/.config/starship.toml
+RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
+RUN echo -e 'eval "$(starship init bash)"' >> ~/.bashrc
 
 WORKDIR /
 
