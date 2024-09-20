@@ -2,7 +2,7 @@ FROM python:3.10-alpine
 
 RUN apk update
 #Some Tools
-RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor
+RUN apk add --no-cache bash curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -28,6 +28,9 @@ RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases
 RUN install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 RUN rm argocd-linux-amd64
 
+# kubnt
+# RUN sh -c "$(curl -sSL https://git.io/install-kubent/install.sh)" # Not working
+
 # Flux CLI
 RUN bash -c "$(curl -s https://fluxcd.io/install.sh)"
 
@@ -38,7 +41,7 @@ go build
 
 #Azure CLI
 WORKDIR azure-cli
-ENV AZ_CLI_VERSION=2.58.0
+ENV AZ_CLI_VERSION=2.63.0
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
 RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
