@@ -12,6 +12,12 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 #Expose for kubectl proxy
 EXPOSE 8001
 
+#Install TPM
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+#tmux conf
+RUN mkdir -p /tmp/tmux-0 && chmod 700 /tmp/tmux-0 && chown root:root /tmp/tmux-0
+
 #K8 Helm
 RUN wget -q "https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz" -O helm.tar.gz && \
 tar -xzf helm.tar.gz && \
