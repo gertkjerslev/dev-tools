@@ -1,8 +1,8 @@
-FROM python:3.10-alpine
+FROM alpine:3.20.3
 
 RUN apk update
 #Some Tools
-RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor tmux
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor tmux dos2unix
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -43,7 +43,7 @@ cd aiac && \
 go build
 
 #Azure CLI
-WORKDIR azure-cli
+WORKDIR /azure-cli
 ENV AZ_CLI_VERSION=2.64.0
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
@@ -73,9 +73,10 @@ RUN ./scripts/install_full.sh \
     )" \
  && apk add --virtual .rundeps $runDeps
 
-# Remove CLI source code from the final image and normalize line endings.
+# Remove CLI source code and normalize line endings
 RUN rm -rf ./azure-cli && \
-    dos2unix /root/.bashrc /usr/local/bin/az
+    dos2unix /root/.bashrc && \
+    if [ -f /usr/local/bin/az ]; then dos2unix /usr/local/bin/az; fi
 ENV AZ_INSTALLER=DOCKER
 
 # Install Azure Powershell module
