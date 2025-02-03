@@ -49,6 +49,7 @@ RUN git clone https://github.com/gofireflyio/aiac.git && \
 cd aiac && \
 go build
 
+
 #Azure CLI
 WORKDIR azure-cli
 ENV AZ_CLI_VERSION=2.67.0
@@ -98,6 +99,22 @@ ENV AZ_INSTALLER=DOCKER
 RUN echo -e "source <(kubectl completion bash)" >> ~/.bashrc
 #RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
 RUN echo "alias k=kubectl" >> ~/.bashrc
+
+#Install Krew plugin manager
+RUN echo "( \
+  set -x; cd "$(mktemp -d)" && \
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
+  KREW="krew-${OS}_${ARCH}" && \
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
+  tar zxvf "${KREW}.tar.gz" && \
+  ./"${KREW}" install krew \
+)" >> ~/.bashrc
+
+# RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
+RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /etc/profile
+# Set up environment for interactive shell
+ENV PATH="/root/.krew/bin:$PATH"
 
 # Install starship
 RUN mkdir -p ~/.config
