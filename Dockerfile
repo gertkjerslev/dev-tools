@@ -111,10 +111,21 @@ RUN echo "( \
   ./"${KREW}" install krew \
 )" >> ~/.bashrc
 
-# RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
 RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /etc/profile
 # Set up environment for interactive shell
 ENV PATH="/root/.krew/bin:$PATH"
+
+# Install KubeTidy
+# Fetch the latest release tag using GitHub's API
+RUN LATEST_VERSION=$(curl -s https://api.github.com/repos/KubeDeckio/KubeTidy/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+
+# Download the KubeTidy.yaml file from the latest release
+RUN curl -L -H "Cache-Control: no-cache" -O https://github.com/KubeDeckio/KubeTidy/releases/download/$LATEST_VERSION/KubeTidy.yaml
+
+# Install the plugin using the downloaded KubeTidy.yaml file
+
+RUN echo -e "source <(kubectl krew install --manifest="./KubeTidy.yaml" bash)" >> ~/.bashrc
+
 
 # Install starship
 RUN mkdir -p ~/.config
