@@ -41,8 +41,18 @@ RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases
 RUN install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 RUN rm argocd-linux-amd64
 
-# kubnt
-# RUN sh -c "$(curl -sSL https://git.io/install-kubent/install.sh)" # Not working
+# Install kubnt
+# Set kube-no-trouble version
+ARG KUBENT_VERSION="0.7.3"
+
+# Download, extract, and install kube-no-trouble
+RUN curl -L -o /tmp/kubent.tar.gz "https://github.com/doitintl/kube-no-trouble/releases/download/${KUBENT_VERSION}/kubent-${KUBENT_VERSION}-linux-amd64.tar.gz" && \
+    tar -xzf /tmp/kubent.tar.gz -C /tmp && \
+    mv /tmp/kubent /usr/local/bin/ && \
+    chmod +x /usr/local/bin/kubent && \
+    rm -rf /tmp/kubent.tar.gz && \
+    ls -lah /usr/local/bin/kubent && \
+    file /usr/local/bin/kubent
 
 # Flux CLI
 RUN bash -c "$(curl -s https://fluxcd.io/install.sh)"
