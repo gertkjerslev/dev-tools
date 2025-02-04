@@ -1,8 +1,8 @@
-FROM python:3.10-alpine
+FROM python:3.11-alpine
 
 RUN apk update
 #Some Tools
-RUN apk add --no-cache bash curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor
+RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor tmux dos2unix lazygit neovim ripgrep alpine-sdk
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -12,8 +12,21 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 #Expose for kubectl proxy
 EXPOSE 8001
 
+#install etcdctl
+RUN wget https://github.com/etcd-io/etcd/releases/download/v3.5.11/etcd-v3.5.11-linux-amd64.tar.gz && \
+tar -xvzf etcd-v3.5.11-linux-amd64.tar.gz && \
+cd etcd-v3.5.11-linux-amd64 && \
+mv etcdctl /usr/local/bin/
+
+
+#Install TPM
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+#tmux conf
+RUN mkdir -p /tmp/tmux-0 && chmod 700 /tmp/tmux-0 && chown root:root /tmp/tmux-0
+
 #K8 Helm
-RUN wget -q "https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz" -O helm.tar.gz && \
+RUN wget -q "https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz" -O helm.tar.gz && \
 tar -xzf helm.tar.gz && \
 rm helm.tar.gz && \
 mv linux-amd64/helm /usr/local/bin/helm
@@ -39,9 +52,10 @@ RUN git clone https://github.com/gofireflyio/aiac.git && \
 cd aiac && \
 go build
 
+
 #Azure CLI
 WORKDIR azure-cli
-ENV AZ_CLI_VERSION=2.63.0
+ENV AZ_CLI_VERSION=2.67.0
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
 RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
@@ -51,6 +65,10 @@ RUN apk add --no-cache bash openssh ca-certificates jq curl openssl perl git zip
  && apk add --no-cache libintl icu-libs libc6-compat \
  && apk add --no-cache bash-completion \
  && update-ca-certificates
+
+#install azure-common
+RUN pip install azure-common
+
 
 ARG JP_VERSION="0.1.3"
 
@@ -70,9 +88,10 @@ RUN ./scripts/install_full.sh \
     )" \
  && apk add --virtual .rundeps $runDeps
 
-# Remove CLI source code from the final image and normalize line endings.
+# Remove CLI source code and normalize line endings
 RUN rm -rf ./azure-cli && \
-    dos2unix /root/.bashrc /usr/local/bin/az
+    dos2unix /root/.bashrc && \
+    if [ -f /usr/local/bin/az ]; then dos2unix /usr/local/bin/az; fi
 ENV AZ_INSTALLER=DOCKER
 
 # Install Azure Powershell module
@@ -83,6 +102,22 @@ ENV AZ_INSTALLER=DOCKER
 RUN echo -e "source <(kubectl completion bash)" >> ~/.bashrc
 #RUN echo "source /etc/profile.d/bash_completion.sh" >> ~/.bashrc
 RUN echo "alias k=kubectl" >> ~/.bashrc
+
+#Install Krew plugin manager
+RUN echo "( \
+  set -x; cd "$(mktemp -d)" && \
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
+  KREW="krew-${OS}_${ARCH}" && \
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
+  tar zxvf "${KREW}.tar.gz" && \
+  ./"${KREW}" install krew \
+)" >> ~/.bashrc
+
+# RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
+RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> /etc/profile
+# Set up environment for interactive shell
+ENV PATH="/root/.krew/bin:$PATH"
 
 # Install starship
 RUN mkdir -p ~/.config

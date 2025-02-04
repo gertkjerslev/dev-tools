@@ -1,6 +1,19 @@
 # Dev-tools
 
-## Build image
+This project provides a Docker-based development environment equipped with various tools and utilities commonly used for development and DevOps tasks. The Docker image includes essential tools such as Kubernetes CLI, Helm, ArgoCD, Flux CLI, Azure CLI, and more, allowing developers to have a consistent and portable development setup.
+
+## Features
+
+- **Kubernetes CLI**: Manage Kubernetes clusters with `kubectl`.
+- **Helm**: Package manager for Kubernetes.
+- **ArgoCD**: Declarative GitOps continuous delivery tool for Kubernetes.
+- **Flux CLI**: Continuous delivery solution for Kubernetes.
+- **Azure CLI**: Command-line tools for managing Azure resources.
+- **Additional Tools**: Includes tools like Git, Docker, Node.js, Go, PowerShell, and more.
+
+## Usage
+
+### Build the Docker Image
 
 ``` bash
 docker build -t dev-tools:latest .
@@ -10,7 +23,7 @@ docker build -t dev-tools:latest .
 ## Docker run
 
 ``` bash
-docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run/docker.sock --net host --rm --workdir /work dev-tools:latest
+docker run -it  -v ${PWD}:/work -v $home/.root:/root -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run docker.sock --net host --rm --workdir /work dev-tools:latest
 ```
 
 ## Powershell alias
@@ -20,7 +33,7 @@ Put this in your powershell $profile
 ``` powershell
 
 function start-dev-tools-container {  
-    docker run -it  -v ${PWD}:/work -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run/docker.sock --net host --rm --workdir /work dev-tools:latest
+    docker run -it  -v ${PWD}:/work -v $home/.root:/root -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run/docker.sock --net host --rm --workdir /work dev-tools:latest
 }
 Set-Alias devtools start-dev-tools-container
 
