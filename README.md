@@ -10,6 +10,7 @@ This project provides a Docker-based development environment equipped with vario
 - **Flux CLI**: Continuous delivery solution for Kubernetes.
 - **Azure CLI**: Command-line tools for managing Azure resources.
 - **Additional Tools**: Includes tools like Git, Docker, Node.js, Go, PowerShell, and more.
+- **kube-no-trouble**: Easily check your clusters for use of deprecated APIs
 
 ## Usage
 
