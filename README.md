@@ -11,7 +11,7 @@ This project provides a Docker-based development environment equipped with vario
 - **Azure CLI**: Command-line tools for managing Azure resources.
 - **Additional Tools**: Includes tools like Git, Docker, Node.js, Go, PowerShell, and more.
 - **kube-no-trouble**: Easily check your clusters for the use of deprecated APIs
-- **Krew: plugin manager for `kubectl` command-line tool
+- **Krew**: plugin manager for `kubectl` command-line tool
 
 ## Usage
 
