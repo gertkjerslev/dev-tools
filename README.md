@@ -27,17 +27,39 @@ docker build -t dev-tools:latest .
 docker run -it  -v ${PWD}:/work -v $home/.root:/root -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run docker.sock --net host --rm --workdir /work dev-tools:latest
 ```
 
+## Podman run
+
+``` bash
+podman run -it -v "$(pwd):/work" -v "$HOME/.root:/root" -v "$HOME/.azure:/root/.azure" -v "$HOME/.kube:/root/.kube" --network=host --rm --workdir /work dev-tools:latest
+```
+
 ## Powershell alias
 
 Put this in your powershell $profile
 
 ``` powershell
-
+## Docker
 function start-dev-tools-container {  
     docker run -it  -v ${PWD}:/work -v $home/.root:/root -v $home/.azure:/root/.azure -v $home/.kube:/root/.kube -v /var/run/docker.sock:/var/run/docker.sock --net host --rm --workdir /work dev-tools:latest
 }
 Set-Alias devtools start-dev-tools-container
 
+```
+
+``` powershell
+## PodMan
+function Start-DevTools-Container {
+    podman run -it `
+        -v "${PWD}:/work" `
+        -v "${env:USERPROFILE}\.root:/root" `
+        -v "${env:USERPROFILE}\.azure:/root/.azure" `
+        -v "${env:USERPROFILE}\.kube:/root/.kube" `
+        --network=host `
+        --rm `
+        --workdir /work `
+        dev-tools:latest
+}
+Set-Alias devtools Start-DevTools-Container
 ```
 
 ## Windows Terminal
