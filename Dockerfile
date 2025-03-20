@@ -104,6 +104,9 @@ RUN rm -rf ./azure-cli && \
     if [ -f /usr/local/bin/az ]; then dos2unix /usr/local/bin/az; fi
 ENV AZ_INSTALLER=DOCKER
 
+# Set the default timezone to Europe/Copenhagen
+ENV TZ="Europe/Copenhagen"
+
 # Install Azure Powershell module
 
 # Tab completion

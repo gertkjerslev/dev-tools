@@ -22,6 +22,11 @@ docker build -t dev-tools:latest .
 
 ```
 
+``` bash
+podman build -t dev-tools:latest .
+
+```
+
 ## Docker run
 
 ``` bash
