@@ -3,6 +3,7 @@ FROM python:3.11-alpine
 RUN apk update
 #Some Tools
 RUN apk add --no-cache curl bash-completion ncurses-terminfo-base ncurses-terminfo readline ncurses-libs bash nano ncurses docker git k9s go powershell nodejs npm yarn neovim vim vim-tutor tmux dos2unix lazygit neovim ripgrep alpine-sdk
+RUN apk update
 
 #Google Kubernetes control cmd
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -65,7 +66,7 @@ go build
 
 #Azure CLI
 WORKDIR azure-cli
-ENV AZ_CLI_VERSION=2.67.0
+ENV AZ_CLI_VERSION=2.77.0
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
 RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
@@ -75,6 +76,7 @@ RUN apk add --no-cache bash openssh ca-certificates jq curl openssl perl git zip
  && apk add --no-cache libintl icu-libs libc6-compat \
  && apk add --no-cache bash-completion \
  && update-ca-certificates
+
 
 #install azure-common
 RUN pip install azure-common
