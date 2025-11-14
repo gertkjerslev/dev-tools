@@ -65,8 +65,8 @@ go build
 
 
 #Azure CLI
-WORKDIR azure-cli
-ENV AZ_CLI_VERSION=2.77.0
+WORKDIR /azure-cli
+ENV AZ_CLI_VERSION=2.79.0
 RUN wget -q "https://github.com/Azure/azure-cli/archive/azure-cli-${AZ_CLI_VERSION}.tar.gz" -O azcli.tar.gz && \
     tar -xzf azcli.tar.gz && ls -l
 RUN cp azure-cli-azure-cli-${AZ_CLI_VERSION}/** /azure-cli/ -r && \
@@ -77,6 +77,8 @@ RUN apk add --no-cache bash openssh ca-certificates jq curl openssl perl git zip
  && apk add --no-cache bash-completion \
  && update-ca-certificates
 
+# install ingress2gateway
+RUN go install github.com/kubernetes-sigs/ingress2gateway@v0.4.0
 
 #install azure-common
 RUN pip install azure-common
